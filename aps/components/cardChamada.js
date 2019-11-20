@@ -5,11 +5,12 @@ const width = Dimensions.get('window').width; //full width
 const height = Dimensions.get('window').height; //full height
 
 export default function CardChamada(props) {
+
     return (
         <View style={styles.container}>
-            <Text style={styles.titulo}>Titulo</Text>
-            <Text style={styles.descricao}>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempor pulvinar mi in porta. Phasellus tincidunt, est eu porttitor tristique, arcu est lobortis tellus, in laoreet est diam vel eros.</Text>
-            <Text style={styles.data}>15/05/1998</Text>
+            <Text style={styles.titulo}>{props.titulo}</Text>
+            <Text style={styles.descricao}>{props.descricao}</Text>
+            <Text style={styles.data}>{props.data}</Text>
         </View>
     );
 }
