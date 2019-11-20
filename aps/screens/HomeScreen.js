@@ -11,28 +11,71 @@ import {
   Dimensions,
 } from 'react-native';
 import CardChamada from '../components/cardChamada.js'
+import axios from 'axios';
 
-import { MonoText } from '../components/StyledText';
+export default class HomeScreen extends React.Component {
 
-
-export default function HomeScreen() {
-  return (
-    <View style={styles.container}>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}>
-        {repeat()}
-      </ScrollView>
-    </View>
-  );
-}
-
-function repeat() {
-  var array = []
-  for (var x = 0; x < 5; x++) {
-    array.push(<CardChamada style={styles.card} key={x}/>)
+  constructor() {
+    super()
+    this.state = {
+      chamados: [],
+      pagesTotal: 0,
+      pageAtual: 0,
+      keys: [],
+    }
+    this.api = this.api.bind(this)
   }
-  return array
+
+  api() {
+    console.log('Inicio axios')
+    var pagesTotal = this.state.pagesTotal
+    var pageAtual = this.state.pageAtual
+    var chamados = this.state.chamados
+    var keys = this.state.keys
+    axios.get('http://192.168.15.10:8080/chamado/status/ABERTO?size=5&page=' + pageAtual)
+      .then(response => {
+
+        var resposta = response.data.content;
+        for (var x = 0; x < resposta.length; x++) {
+          keys.push(resposta[x].id)
+          var data = resposta[x].dataAbertura.split('T')[0]
+          data = data.split('-')[2] + '/' + data.split('-')[1] + '/' + data.split('-')[0]
+          chamados.push(<CardChamada style={styles.card} key={resposta[x].id} titulo={resposta[x].titulo_Chamado} descricao={resposta[x].descricao_Chamado} data={data} />)
+        }
+
+        pagesTotal = response.data.totalPages;
+        pageAtual++;
+
+        this.setState({ chamados, pagesTotal, pageAtual, keys })
+        console.log(pageAtual)
+        console.log(pagesTotal)
+        console.log(keys)
+        if (pageAtual < (pagesTotal - 1)) {
+          this.api()
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
+
+  }
+
+  componentDidMount() {
+    this.api()
+  }
+
+  render() {
+    return (
+      <View style={styles.container}>
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={styles.contentContainer}
+        >
+          {this.state.chamados}
+        </ScrollView>
+      </View>
+    )
+  }
 }
 
 HomeScreen.navigationOptions = {
@@ -45,41 +88,6 @@ HomeScreen.navigationOptions = {
     fontWeight: 'bold',
   },
 };
-
-function DevelopmentModeNotice() {
-  if (__DEV__) {
-    const learnMoreButton = (
-      <Text onPress={handleLearnMorePress} style={styles.helpLinkText}>
-        Learn more
-      </Text>
-    );
-
-    return (
-      <Text style={styles.developmentModeText}>
-        Development mode is enabled: your app will be slower but you can use
-        useful development tools. {learnMoreButton}
-      </Text>
-    );
-  } else {
-    return (
-      <Text style={styles.developmentModeText}>
-        You are not in development mode: your app will run at full speed.
-      </Text>
-    );
-  }
-}
-
-function handleLearnMorePress() {
-  WebBrowser.openBrowserAsync(
-    'https://docs.expo.io/versions/latest/workflow/development-mode/'
-  );
-}
-
-function handleHelpPress() {
-  WebBrowser.openBrowserAsync(
-    'https://docs.expo.io/versions/latest/workflow/up-and-running/#cant-see-your-changes'
-  );
-}
 
 const styles = StyleSheet.create({
   container: {
