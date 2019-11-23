@@ -1,15 +1,11 @@
-import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
-import CardChamada from '../components/cardChamada.js'
+import { ScrollView, StyleSheet } from 'react-native';
+import CardChamada from '../components/cardChamada.js';
 import axios from 'axios';
 
-export default class LinksScreen extends React.Component {
 
+export default class SettingsScreen extends React.Component {
+ 
   constructor() {
     super()
     this.state = {
@@ -27,7 +23,7 @@ export default class LinksScreen extends React.Component {
     var pageAtual = this.state.pageAtual
     var chamados = this.state.chamados
     var keys = this.state.keys
-    axios.get('http://192.168.15.10:8080/chamado/status/FECHADOS?size=5&page=' + pageAtual)
+    axios.get('http://192.168.15.11:8080/chamado/status/SOLUCIONADO?size=5&page=' + pageAtual)
       .then(response => {
 
         var resposta = response.data.content;
@@ -61,27 +57,20 @@ export default class LinksScreen extends React.Component {
 
   render() {
     return (
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}
-      >
-        {this.state.chamados}
-      </ScrollView>
+      <View style={styles.container}>
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={styles.contentContainer}
+        >
+          {this.state.chamados}
+        </ScrollView>
+      </View>
     )
   }
 }
 
-
-function repeat() {
-  var array = []
-  for (var x = 0; x < 5; x++) {
-    array.push(<CardChamada style={styles.card} key={x} />)
-  }
-  return array
-}
-
-LinksScreen.navigationOptions = {
-  title: 'A - Chamados Fechados',
+SettingsScreen.navigationOptions = {
+  title: 'Chamados Solucionados - UserTecnico1',
   headerStyle: {
     backgroundColor: '#299B41',
   },
